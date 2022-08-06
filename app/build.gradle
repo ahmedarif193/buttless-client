@@ -31,6 +31,8 @@ android {
 dependencies {
     implementation fileTree(dir: "libs", include: ["*.jar"])
     implementation 'androidx.multidex:multidex:2.0.1'
+    //scanqr code
+    implementation 'com.journeyapps:zxing-android-embedded:4.3.0'
 
     //google support library
     implementation 'androidx.appcompat:appcompat:1.2.0'

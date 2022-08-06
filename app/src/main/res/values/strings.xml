@@ -45,14 +45,14 @@
 
     <string name="autenticate">Authenticating...</string>
 
-    <string name="add">Add</string>
-    <string name="withdraw">Withdraw</string>
+    <string name="add">scan points</string>
+    <string name="withdraw">Withdraw points</string>
     <string name="history">History</string>
     <string name="you_have">you have</string>
     <string name="points">points</string>
 
-    <string name="home_no_item">you haven\'t added balance to the app yet</string>
-    <string name="points_added">points have been added to your account</string>
+    <string name="home_no_item">you haven\'t scanned any points to the app yet</string>
+    <string name="points_added">points have been scanned and added to your account</string>
 
     <string name="pending">Pending</string>
     <string name="approved">Approved</string>

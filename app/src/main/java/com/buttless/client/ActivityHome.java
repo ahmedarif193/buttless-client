@@ -15,6 +15,7 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -159,7 +160,8 @@ public class ActivityHome extends AppCompatActivity {
         JSONObject request = new JSONObject();
         try {
             //set the parameter
-            request.put(KEY_USERNAME, storageUser);
+            Log.d("API123 KEY_USERNAME - ", storageUser);
+            request.put(KEY_USERNAME, "storageUser");
         } catch (JSONException e) {
             //print a error, or do something
             e.printStackTrace();
@@ -171,6 +173,7 @@ public class ActivityHome extends AppCompatActivity {
                 (Request.Method.POST, requestUserPoints, request, response -> {
                     //show a dialog
                     try {
+                        Log.d("API123", String.valueOf(response.getInt(KEY_STATUS)));
                         if (response.getInt(KEY_STATUS) == 0) {
                             txtHomePoints.setText(response.getString(KEY_POINTS));
                             mShimmerViewContainer.stopShimmerAnimation();

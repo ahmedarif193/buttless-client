@@ -153,12 +153,12 @@ public class ActivityLogin extends AppCompatActivity {
 
             @Override
             public void onCancel() {
-                Log.d("ERROR", "CANCELED");
+                Log.d("API123", "CANCELED");
             }
 
             @Override
             public void onError(FacebookException exception) {
-                Log.d("ERROR", "ERROR: "+exception.getMessage());
+                Log.d("API123", "ERROR: "+exception.getMessage());
             }
         });
     }
