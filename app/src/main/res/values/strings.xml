@@ -1,0 +1,79 @@
+<resources>
+    <string name="app_name">Wala</string>
+    <string name="login_appname">WalaApp</string>
+    <string name="caption">exchange your rewards</string>
+
+    <string name="facebook_app_id">416295576027797</string>
+    <string name="fb_login_protocol_scheme">fb416295576027797</string>
+
+    <string name="url_api">http://wizefix.online/api/</string>
+
+    <string name="next">NEXT</string>
+    <string name="skip">SKIP</string>
+    <string name="start">LET\'S GO</string>
+    <string name="slide_1_title">What is it?</string>
+    <string name="slide_1_desc">We exchange your rewards for money in your PayPal wallet</string>
+    <string name="slide_2_title">How it works?</string>
+    <string name="slide_2_desc">Your rewards come to us and we will refund you in cash</string>
+    <string name="slide_3_title">It\'s safe?</string>
+    <string name="slide_3_desc">You can trust us, we will trust you too</string>
+
+    <string name="login_desc">We guarantee your security with SSL connections</string>
+
+    <string name="timeout_error">The server was slow to respond, try again</string>
+    <string name="no_connection_error">It looks like you have no internet, can you check?</string>
+    <string name="auth_failure_error">We had an authentication problem, please try again</string>
+    <string name="server_error">The server is unstable, wait and try again</string>
+    <string name="network_error">Check the quality of your internet, we are having problems</string>
+    <string name="parse_error">We got errors when fetching responses from the server, try again</string>
+    <string name="default_error">An error has occurred, we are being advised to correct</string>
+
+    <string name="error_google_play_library">Google Play Billing library could not be started</string>
+    <string name="error_item_not_found">Purchase item not found</string>
+    <string name="error_purchase_cancelled">Cancelled purchase</string>
+    <string name="error_invalid_purchase">Invalid purchase</string>
+    <string name="error_pending_purchase">The purchase is pending. Please complete the transaction</string>
+    <string name="error_purchase_status_unknown">Unknown purchase status</string>
+    <string name="error_empty_mail">Your email address is empty</string>
+    <string name="error_invalid_mail">The email address is invalid</string>
+    <string name="error_no_balance">You do not have enough points to withdraw</string>
+
+    <string name="ops">Ops!</string>
+    <string name="ok">Ok</string>
+    <string name="close">Close</string>
+    <string name="undefined">undefined</string>
+
+    <string name="autenticate">Authenticating...</string>
+
+    <string name="add">Add</string>
+    <string name="withdraw">Withdraw</string>
+    <string name="history">History</string>
+    <string name="you_have">you have</string>
+    <string name="points">points</string>
+
+    <string name="home_no_item">you haven\'t added balance to the app yet</string>
+    <string name="points_added">points have been added to your account</string>
+
+    <string name="pending">Pending</string>
+    <string name="approved">Approved</string>
+    <string name="cancelled">Canceled</string>
+    <string name="refund">Refund</string>
+    <string name="waiting_for_google">Waiting for Google</string>
+    <string name="waiting_payment">Awaiting payment</string>
+
+    <string name="add_balance">Balance added</string>
+    <string name="withdraw_history">Withdraw</string>
+    <string name="refund_history">Refund</string>
+
+    <string name="add_balance_title">Add balance</string>
+
+    <string name="google_play">Google Play - $%1$s</string>
+    <string name="buy_for">Buy for $%1$s</string>
+
+    <string name="withdraw_description">* The amount will be credited to your PayPal account within 48 business hours</string>
+    <string name="your_paypal_email">Your PayPal email</string>
+    <string name="your_withdraw">points available</string>
+
+    <string name="estimated">you receive $%1$s</string>
+    <string name="buy_desc">You receive 50% (30% Google fees + 20% Wala fees) of your balance</string>
+</resources>
