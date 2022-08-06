@@ -61,11 +61,11 @@
     <string name="waiting_for_google">Waiting for Google</string>
     <string name="waiting_payment">Awaiting payment</string>
 
-    <string name="add_balance">Balance added</string>
+    <string name="add_balance">Points added</string>
     <string name="withdraw_history">Withdraw</string>
     <string name="refund_history">Refund</string>
 
-    <string name="add_balance_title">Add balance</string>
+    <string name="add_balance_title">Add Points</string>
 
     <string name="google_play">Google Play - $%1$s</string>
     <string name="buy_for">Buy for $%1$s</string>

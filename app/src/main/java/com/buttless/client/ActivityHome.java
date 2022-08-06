@@ -161,7 +161,7 @@ public class ActivityHome extends AppCompatActivity {
         try {
             //set the parameter
             Log.d("API123 KEY_USERNAME - ", storageUser);
-            request.put(KEY_USERNAME, "storageUser");
+            request.put(KEY_USERNAME, storageUser);
         } catch (JSONException e) {
             //print a error, or do something
             e.printStackTrace();
@@ -179,6 +179,7 @@ public class ActivityHome extends AppCompatActivity {
                             mShimmerViewContainer.stopShimmerAnimation();
                             mShimmerViewContainer.setVisibility(View.GONE);
                             txtHomePoints.setVisibility(View.VISIBLE);
+                            Log.d("API123", "---------");
                         } else {
                             AlertDialog alertDialog = new AlertDialog.Builder(ActivityHome.this).create();
                             alertDialog.setTitle(this.getResources().getString(R.string.ops));
@@ -220,7 +221,7 @@ public class ActivityHome extends AppCompatActivity {
     }
 
     public void openAddFundsActivity(View view) {
-        Intent i = new Intent(this, ActivityAddFunds.class);
+        Intent i = new Intent(this, ActivityAddPoints.class);
         startActivity(i);
         overridePendingTransition(R.anim.slide_in_right,
                                   R.anim.slide_out_left);

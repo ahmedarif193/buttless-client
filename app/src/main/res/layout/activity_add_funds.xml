@@ -6,7 +6,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:fitsSystemWindows="true"
     android:orientation="vertical"
-    tools:context=".ActivityAddFunds">
+    tools:context=".ActivityAddPoints">
 
     <LinearLayout
         android:layout_width="match_parent"

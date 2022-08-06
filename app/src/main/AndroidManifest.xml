@@ -20,7 +20,7 @@
         android:hardwareAccelerated="true">
         <activity android:name="com.buttless.client.ActivityWithdraw"
                   android:screenOrientation="portrait"/>
-        <activity android:name="com.buttless.client.ActivityAddFunds"
+        <activity android:name="com.buttless.client.ActivityAddPoints"
                   android:screenOrientation="portrait"/>
         <activity android:name="com.buttless.client.ActivityHome"
                   android:screenOrientation="portrait"/>
