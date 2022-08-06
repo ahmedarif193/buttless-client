@@ -1,12 +1,12 @@
 <resources>
-    <string name="app_name">Wala</string>
-    <string name="login_appname">WalaApp</string>
-    <string name="caption">exchange your rewards</string>
+    <string name="app_name">Buttless.io</string>
+    <string name="login_appname">ButtLess</string>
+    <string name="caption">exchange your megots rewards with points</string>
 
     <string name="facebook_app_id">3186798148209797</string>
     <string name="fb_login_protocol_scheme">fb3186798148209797</string>
 
-    <string name="url_api">http://wizefix.online/api/</string>
+    <string name="url_api">http://159.69.90.136/api/</string>
 
     <string name="next">NEXT</string>
     <string name="skip">SKIP</string>

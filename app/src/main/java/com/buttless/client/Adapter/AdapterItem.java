@@ -1,4 +1,4 @@
-package com.breaklabs.wala.Adapter;
+package com.buttless.client.Adapter;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -8,12 +8,11 @@ import android.widget.TextView;
 
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.breaklabs.wala.ActivityAddFunds;
-import com.breaklabs.wala.Data.DataPublic;
-import com.breaklabs.wala.R;
+import com.buttless.client.ActivityAddFunds;
+import com.buttless.client.Data.DataPublic;
+import com.buttless.client.R;
 
 import java.text.DecimalFormat;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 

@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "70471442851",
+    "project_id": "buttless-3a606",
+    "storage_bucket": "buttless-3a606.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:70471442851:android:f3bab6aa392921d0e47a16",
+        "android_client_info": {
+          "package_name": "com.buttless.client"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "70471442851-j1rt0q7ggp1hl0q2ai08fqa239qf68o4.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAYaNnTCNilklqG2tmFomVOeG7QtZX3_eI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "70471442851-j1rt0q7ggp1hl0q2ai08fqa239qf68o4.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

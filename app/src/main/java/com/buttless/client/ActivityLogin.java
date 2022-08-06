@@ -1,4 +1,4 @@
-package com.breaklabs.wala;
+package com.buttless.client;
 
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
@@ -21,8 +21,6 @@ import com.android.volley.Request;
 import com.android.volley.ServerError;
 import com.android.volley.TimeoutError;
 import com.android.volley.toolbox.JsonObjectRequest;
-import com.breaklabs.wala.MySingleton;
-import com.breaklabs.wala.R;
 import com.facebook.AccessToken;
 import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;

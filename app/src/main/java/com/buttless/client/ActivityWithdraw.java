@@ -1,4 +1,4 @@
-package com.breaklabs.wala;
+package com.buttless.client;
 
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;

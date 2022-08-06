@@ -1,4 +1,4 @@
-package com.breaklabs.wala;
+package com.buttless.client;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -33,9 +33,9 @@ import com.android.volley.Request;
 import com.android.volley.ServerError;
 import com.android.volley.TimeoutError;
 import com.android.volley.toolbox.JsonObjectRequest;
-import com.breaklabs.wala.Adapter.AdapterItem;
-import com.breaklabs.wala.Data.DataPublic;
-import com.breaklabs.wala.Utils.Security;
+import com.buttless.client.Adapter.AdapterItem;
+import com.buttless.client.Data.DataPublic;
+import com.buttless.client.Utils.Security;
 import com.facebook.shimmer.ShimmerFrameLayout;
 
 import org.json.JSONArray;

@@ -1,4 +1,4 @@
-package com.breaklabs.wala;
+package com.buttless.client;
 
 import org.junit.Test;
 

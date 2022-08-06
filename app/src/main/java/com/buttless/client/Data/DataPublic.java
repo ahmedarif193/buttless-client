@@ -1,4 +1,4 @@
-package com.breaklabs.wala.Data;
+package com.buttless.client.Data;
 
 public class DataPublic {
 

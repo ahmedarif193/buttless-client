@@ -1,4 +1,4 @@
-package com.breaklabs.wala.Adapter;
+package com.buttless.client.Adapter;
 
 import android.content.Context;
 import androidx.recyclerview.widget.RecyclerView;
@@ -8,8 +8,8 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.breaklabs.wala.Data.DataPublic;
-import com.breaklabs.wala.R;
+import com.buttless.client.Data.DataPublic;
+import com.buttless.client.R;
 
 import java.util.Collections;
 import java.util.List;
