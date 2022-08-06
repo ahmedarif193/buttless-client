@@ -3,8 +3,8 @@
     <string name="login_appname">WalaApp</string>
     <string name="caption">exchange your rewards</string>
 
-    <string name="facebook_app_id">416295576027797</string>
-    <string name="fb_login_protocol_scheme">fb416295576027797</string>
+    <string name="facebook_app_id">3186798148209797</string>
+    <string name="fb_login_protocol_scheme">fb3186798148209797</string>
 
     <string name="url_api">http://wizefix.online/api/</string>
 
