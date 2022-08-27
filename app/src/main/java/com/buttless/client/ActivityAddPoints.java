@@ -1,30 +1,21 @@
 package com.buttless.client;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
+import androidx.core.app.ActivityCompat;
 
+import android.Manifest;
 import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.view.KeyEvent;
 import android.view.View;
 import android.widget.Toast;
 
-import com.android.billingclient.api.BillingClient;
-import com.android.billingclient.api.BillingClientStateListener;
-import com.android.billingclient.api.BillingFlowParams;
-import com.android.billingclient.api.BillingResult;
-import com.android.billingclient.api.ConsumeParams;
-import com.android.billingclient.api.ConsumeResponseListener;
-import com.android.billingclient.api.Purchase;
-import com.android.billingclient.api.PurchasesUpdatedListener;
-import com.android.billingclient.api.SkuDetails;
-import com.android.billingclient.api.SkuDetailsParams;
-import com.android.billingclient.api.SkuDetailsResponseListener;
 import com.android.volley.AuthFailureError;
 import com.android.volley.NetworkError;
 import com.android.volley.NoConnectionError;
@@ -33,12 +24,15 @@ import com.android.volley.Request;
 import com.android.volley.ServerError;
 import com.android.volley.TimeoutError;
 import com.android.volley.toolbox.JsonObjectRequest;
-import com.buttless.client.Adapter.AdapterItem;
-import com.buttless.client.Data.DataPublic;
-import com.buttless.client.Utils.Security;
 import com.facebook.shimmer.ShimmerFrameLayout;
+import com.google.zxing.BarcodeFormat;
+import com.google.zxing.ResultPoint;
+import com.google.zxing.client.android.BeepManager;
+import com.journeyapps.barcodescanner.BarcodeCallback;
+import com.journeyapps.barcodescanner.BarcodeResult;
+import com.journeyapps.barcodescanner.DecoratedBarcodeView;
+import com.journeyapps.barcodescanner.DefaultDecoderFactory;
 
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -49,16 +43,22 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.ExecutionException;
 
-import static com.android.billingclient.api.BillingClient.SkuType.INAPP;
+import androidx.camera.lifecycle.ProcessCameraProvider;
+import androidx.core.content.ContextCompat;
+import androidx.lifecycle.LifecycleOwner;
 
-public class ActivityAddFunds extends AppCompatActivity implements PurchasesUpdatedListener {
+
+public class ActivityAddPoints extends AppCompatActivity {
+
+    private static final int PERMISSION_REQUEST_CAMERA = 0;
 
     public static final String PREF_FILE= "MyPref";
-    public static String PURCHASE_KEY= "consumable";
     public static String PRODUCT_ID= "consumable";
 
     public static final String PREFS_NAME = "FB_DTLHS";
@@ -74,14 +74,15 @@ public class ActivityAddFunds extends AppCompatActivity implements PurchasesUpda
     public String apiUrl, storageUser, svdPoints;
     private ShimmerFrameLayout mShimmerViewContainerItem;
 
-    private BillingClient billingClient;
-
     //private List<String> sku = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_add_funds);
+        setContentView(R.layout.activity_add_points);
+
+        //ask for camera permission
+        requestCamera();
 
         ActionBar actionBar = getSupportActionBar();
         if (actionBar != null) {
@@ -91,177 +92,41 @@ public class ActivityAddFunds extends AppCompatActivity implements PurchasesUpda
         //get api url
         apiUrl = getString(R.string.url_api);
         //get all settings from local storage
-        SharedPreferences shaPrefHome = Objects.requireNonNull(ActivityAddFunds.this.getSharedPreferences(PREFS_NAME, MODE_PRIVATE));
+        SharedPreferences shaPrefHome = Objects.requireNonNull(ActivityAddPoints.this.getSharedPreferences(PREFS_NAME, MODE_PRIVATE));
         //pick the facebook id from local storage logged user
         storageUser = shaPrefHome.getString("fb_id", "");
 
         new AsyncFetch().execute();
 
-        mShimmerViewContainerItem = findViewById(R.id.shimmer_view_container_item);
-        mShimmerViewContainerItem.startShimmerAnimation();
+        barcodeView = findViewById(R.id.barcode_scanner);
+        Collection<BarcodeFormat> formats = Arrays.asList(BarcodeFormat.QR_CODE, BarcodeFormat.CODE_39);
+        barcodeView.getBarcodeView().setDecoderFactory(new DefaultDecoderFactory(formats));
+        barcodeView.initializeFromIntent(getIntent());
+        barcodeView.decodeContinuous(callback);
+
+        beepManager = new BeepManager(this);
+//        mShimmerViewContainerItem = findViewById(R.id.shimmer_view_container_item);
+//        mShimmerViewContainerItem.startShimmerAnimation();
     }
 
-    private void initBilling(){
-        billingClient = BillingClient.newBuilder(this)
-                .enablePendingPurchases().setListener(this).build();
-        billingClient.startConnection(new BillingClientStateListener() {
-            @Override
-            public void onBillingSetupFinished(@NonNull BillingResult billingResult) {
-                if(billingResult.getResponseCode()==BillingClient.BillingResponseCode.OK){
-                    Purchase.PurchasesResult queryPurchase = billingClient.queryPurchases(INAPP);
-                    List<Purchase> queryPurchases = queryPurchase.getPurchasesList();
-                    if(queryPurchases!=null && queryPurchases.size()>0){
-                        handlePurchases(queryPurchases);
-                    }
-                }
-            }
+//
+//    private SharedPreferences getPreferenceObject() {
+//        return getApplicationContext().getSharedPreferences(PREF_FILE, 0);
+//    }
+//
+//    private SharedPreferences.Editor getPreferenceEditObject() {
+//        SharedPreferences pref = getApplicationContext().getSharedPreferences(PREF_FILE, 0);
+//        return pref.edit();
+//    }
 
-            @Override
-            public void onBillingServiceDisconnected() {
-                Toast.makeText(ActivityAddFunds.this, getResources().getString(R.string.error_google_play_library), Toast.LENGTH_SHORT).show();
-            }
-        });
-    }
-
-    private SharedPreferences getPreferenceObject() {
-        return getApplicationContext().getSharedPreferences(PREF_FILE, 0);
-    }
-
-    private SharedPreferences.Editor getPreferenceEditObject() {
-        SharedPreferences pref = getApplicationContext().getSharedPreferences(PREF_FILE, 0);
-        return pref.edit();
-    }
-
-    private int getPurchaseCountValueFromPref(){
-        return getPreferenceObject().getInt( PURCHASE_KEY,0);
-    }
-
-    private void savePurchaseCountValueToPref(int value){
-        getPreferenceEditObject().putInt(PURCHASE_KEY, value).commit();
-    }
-
-    public void buyItem(String bdSkuId, String bdPoints) {
-        PRODUCT_ID = bdSkuId;
-        PURCHASE_KEY = bdSkuId;
-        svdPoints = bdPoints;
-
-        if (billingClient.isReady()) {
-            initiatePurchase();
-        } else {
-            billingClient = BillingClient.newBuilder(this).enablePendingPurchases().setListener(this).build();
-            billingClient.startConnection(new BillingClientStateListener() {
-                @Override
-                public void onBillingSetupFinished(@NonNull BillingResult billingResult) {
-                    if (billingResult.getResponseCode() == BillingClient.BillingResponseCode.OK) {
-                        initiatePurchase();
-                    } else {
-                        Toast.makeText(getApplicationContext(),"Error " + billingResult.getDebugMessage(),Toast.LENGTH_SHORT).show();
-                    }
-                }
-                @Override
-                public void onBillingServiceDisconnected() {
-                }
-            });
-        }
-    }
-
-    private void initiatePurchase() {
-        List<String> skuList = new ArrayList<>();
-        skuList.add(PRODUCT_ID);
-        SkuDetailsParams.Builder params = SkuDetailsParams.newBuilder();
-        params.setSkusList(skuList).setType(INAPP);
-        billingClient.querySkuDetailsAsync(params.build(),
-                new SkuDetailsResponseListener() {
-                    @Override
-                    public void onSkuDetailsResponse(@NonNull BillingResult billingResult,
-                                                     List<SkuDetails> skuDetailsList) {
-                        if (billingResult.getResponseCode() == BillingClient.BillingResponseCode.OK) {
-                            if (skuDetailsList != null && skuDetailsList.size() > 0) {
-                                BillingFlowParams flowParams = BillingFlowParams.newBuilder()
-                                        .setSkuDetails(skuDetailsList.get(0))
-                                        .build();
-                                billingClient.launchBillingFlow(ActivityAddFunds.this, flowParams);
-                            }
-                            else{
-                                Toast.makeText(getApplicationContext(), getResources().getString(R.string.error_item_not_found),Toast.LENGTH_SHORT).show();
-                            }
-                        } else {
-                            Toast.makeText(getApplicationContext(), "Error " + billingResult.getDebugMessage(), Toast.LENGTH_SHORT).show();
-                        }
-                    }
-                });
-    }
-
-    @Override
-    public void onPurchasesUpdated(BillingResult billingResult, @Nullable List<Purchase> purchases) {
-
-        if (billingResult.getResponseCode() == BillingClient.BillingResponseCode.OK && purchases != null) {
-            handlePurchases(purchases);
-        } else if (billingResult.getResponseCode() == BillingClient.BillingResponseCode.ITEM_ALREADY_OWNED) {
-            Purchase.PurchasesResult queryAlreadyPurchasesResult = billingClient.queryPurchases(INAPP);
-            List<Purchase> alreadyPurchases = queryAlreadyPurchasesResult.getPurchasesList();
-            if(alreadyPurchases!=null){
-                handlePurchases(alreadyPurchases);
-            }
-        } else if (billingResult.getResponseCode() == BillingClient.BillingResponseCode.USER_CANCELED) {
-            Toast.makeText(getApplicationContext(),this.getResources().getString(R.string.error_purchase_cancelled),Toast.LENGTH_SHORT).show();
-        } else {
-            Toast.makeText(getApplicationContext(),"Error " + billingResult.getDebugMessage(),Toast.LENGTH_SHORT).show();
-        }
-    }
-
-    void handlePurchases(List<Purchase>  purchases) {
-
-        for(Purchase purchase:purchases) {
-            if (PRODUCT_ID.equals(purchase.getSku()) && purchase.getPurchaseState() == Purchase.PurchaseState.PURCHASED){
-                if (!verifyValidSignature(purchase.getOriginalJson(), purchase.getSignature())) {
-                    Toast.makeText(getApplicationContext(), this.getResources().getString(R.string.error_invalid_purchase), Toast.LENGTH_SHORT).show();
-                    return;
-                }
-                if (!purchase.isAcknowledged()) {
-                    ConsumeParams consumeParams = ConsumeParams.newBuilder()
-                            .setPurchaseToken(purchase.getPurchaseToken())
-                            .build();
-
-                    billingClient.consumeAsync(consumeParams, consumeListener);
-                }
-            } else if( PRODUCT_ID.equals(purchase.getSku()) && purchase.getPurchaseState() == Purchase.PurchaseState.PENDING){
-                Toast.makeText(getApplicationContext(), this.getResources().getString(R.string.error_pending_purchase), Toast.LENGTH_SHORT).show();
-            } else if(PRODUCT_ID.equals(purchase.getSku()) && purchase.getPurchaseState() == Purchase.PurchaseState.UNSPECIFIED_STATE){
-                Toast.makeText(getApplicationContext(), this.getResources().getString(R.string.error_purchase_status_unknown), Toast.LENGTH_SHORT).show();
-            }
-        }
-    }
-
-    ConsumeResponseListener consumeListener = new ConsumeResponseListener() {
-        @Override
-        public void onConsumeResponse(BillingResult billingResult, String purchaseToken) {
-            if (billingResult.getResponseCode() == BillingClient.BillingResponseCode.OK) {
-                int consumeCountValue=getPurchaseCountValueFromPref()+1;
-                savePurchaseCountValueToPref(consumeCountValue);
-                addPointsToUser();
-            }
-        }
-    };
-
-    private boolean verifyValidSignature(String signedData, String signature) {
-        try {
-            //To get key go to Developer Console > Select your app > Monetize > Monetization setup
-            String base64Key = "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAigndNIdMS/PVIypxJ7TTfd4q0E/oCwuMgeXB79b5M/leShj3LXJOEySEmvxOUxFTmJqrYsbG1tIFnrAMYHWK0b/o05695UoDkjYpfDFOFwX1Yz9/m4tkHMbtPIEkxYPAMAQFzo0RUMkxqfSN474n6whR7F2UJruh+SNSRh7/3dgwu7lCY+ppQKUoaBr3mY8U63CsPqQaAZdrJFW4HKLiix05Tpxe+YP1LF7XMQfVCuBBM2MfJq8AfEEnzpNAP13BfxfIKNcAP2MmSTkdnhh1rvzmW20HcN6MHLsXXD5P+eoGWQ3Bxy6QrR0iwrQg7yaLVQk1w8tsRFvrClPNiQX5JwIDAQAB";
-            return Security.verifyPurchase(base64Key, signedData, signature);
-        } catch (IOException e) {
-            return false;
-        }
-    }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        if(billingClient!=null){
-            billingClient.endConnection();
-        }
+//        if(billingClient!=null){
+//            billingClient.endConnection();
+//        }
     }
-
     @Override
     public void onBackPressed() {
         super.onBackPressed();
@@ -270,9 +135,7 @@ public class ActivityAddFunds extends AppCompatActivity implements PurchasesUpda
         finish();
     }
 
-    public void closeAddFundsActivity(View view) {
-        overridePendingTransition(R.anim.slide_in_left,
-                R.anim.slide_out_right);
+    public void closeAddPointsActivity(View view) {
         finish();
     }
 
@@ -328,29 +191,28 @@ public class ActivityAddFunds extends AppCompatActivity implements PurchasesUpda
             }
         }
 
-        @Override
-        protected void onPostExecute(String result) {
+    }
 
-            List<DataPublic> data = new ArrayList<>();
-            try {
-                JSONArray jArray = new JSONArray(result);
-                for(int i=0;i<jArray.length();i++){
-                    JSONObject json_data = jArray.getJSONObject(i);
-                    DataPublic publicData = new DataPublic();
-                    publicData.itemValue = json_data.getString("value");
-                    publicData.itemPoints = json_data.getString("points");
-                    publicData.itemSkuId = json_data.getString("sku_id");
-                    data.add(publicData);
-                }
-                RecyclerView mRVItem = findViewById(R.id.itemsList);
-                AdapterItem mAdapter = new AdapterItem(ActivityAddFunds.this, data, ActivityAddFunds.this);
-                mRVItem.setAdapter(mAdapter);
-                mRVItem.setLayoutManager(new LinearLayoutManager(ActivityAddFunds.this));
-                mRVItem.setVisibility(View.VISIBLE);
-                mShimmerViewContainerItem.setVisibility(View.GONE);
-                initBilling();
-            } catch (JSONException e) {
-                mShimmerViewContainerItem.setVisibility(View.GONE);
+
+
+
+    private void requestCamera() {
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED) {
+        } else {
+            if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.CAMERA)) {
+                ActivityCompat.requestPermissions(ActivityAddPoints.this, new String[]{Manifest.permission.CAMERA}, PERMISSION_REQUEST_CAMERA);
+            } else {
+                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.CAMERA}, PERMISSION_REQUEST_CAMERA);
+            }
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        if (requestCode == PERMISSION_REQUEST_CAMERA) {
+            if (grantResults.length == 1 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+            } else {
+                Toast.makeText(this, "Camera Permission Denied", Toast.LENGTH_SHORT).show();
             }
         }
     }
@@ -370,7 +232,7 @@ public class ActivityAddFunds extends AppCompatActivity implements PurchasesUpda
                         if (response.getInt(KEY_STATUS) == 0) {
                             Toast.makeText(this, response.getInt(KEY_POINTS) + " " + this.getResources().getString(R.string.points_added), Toast.LENGTH_SHORT).show();
                         } else {
-                            AlertDialog alertDialog = new AlertDialog.Builder(ActivityAddFunds.this).create();
+                            AlertDialog alertDialog = new AlertDialog.Builder(ActivityAddPoints.this).create();
                             alertDialog.setTitle(this.getResources().getString(R.string.ops));
                             alertDialog.setMessage(response.getString(KEY_MESSAGE));
                             alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, this.getResources().getString(R.string.ok),
@@ -383,24 +245,93 @@ public class ActivityAddFunds extends AppCompatActivity implements PurchasesUpda
                 }, error -> {
                     try {
                         if (error instanceof TimeoutError) {
-                            Toast.makeText(ActivityAddFunds.this, this.getResources().getString(R.string.timeout_error), Toast.LENGTH_LONG).show();
+                            Toast.makeText(ActivityAddPoints.this, this.getResources().getString(R.string.timeout_error), Toast.LENGTH_LONG).show();
                         } else if(error instanceof NoConnectionError){
-                            Toast.makeText(ActivityAddFunds.this, this.getResources().getString(R.string.no_connection_error), Toast.LENGTH_LONG).show();
+                            Toast.makeText(ActivityAddPoints.this, this.getResources().getString(R.string.no_connection_error), Toast.LENGTH_LONG).show();
                         } else if (error instanceof AuthFailureError) {
-                            Toast.makeText(ActivityAddFunds.this, this.getResources().getString(R.string.auth_failure_error), Toast.LENGTH_LONG).show();
+                            Toast.makeText(ActivityAddPoints.this, this.getResources().getString(R.string.auth_failure_error), Toast.LENGTH_LONG).show();
                         } else if (error instanceof ServerError) {
-                            Toast.makeText(ActivityAddFunds.this, this.getResources().getString(R.string.server_error), Toast.LENGTH_LONG).show();
+                            Toast.makeText(ActivityAddPoints.this, this.getResources().getString(R.string.server_error), Toast.LENGTH_LONG).show();
                         } else if (error instanceof NetworkError) {
-                            Toast.makeText(ActivityAddFunds.this, this.getResources().getString(R.string.network_error), Toast.LENGTH_LONG).show();
+                            Toast.makeText(ActivityAddPoints.this, this.getResources().getString(R.string.network_error), Toast.LENGTH_LONG).show();
                         } else if (error instanceof ParseError) {
-                            Toast.makeText(ActivityAddFunds.this, this.getResources().getString(R.string.parse_error), Toast.LENGTH_LONG).show();
+                            Toast.makeText(ActivityAddPoints.this, this.getResources().getString(R.string.parse_error), Toast.LENGTH_LONG).show();
                         } else {
-                            Toast.makeText(ActivityAddFunds.this, this.getResources().getString(R.string.default_error), Toast.LENGTH_LONG).show();
+                            Toast.makeText(ActivityAddPoints.this, this.getResources().getString(R.string.default_error), Toast.LENGTH_LONG).show();
                         }
                     } catch (Exception ignored) {
 
                     }
                 });
         MySingleton.getInstance(this).addToRequestQueue(jsArrayRequest);
+    }
+
+    private DecoratedBarcodeView barcodeView;
+    private BeepManager beepManager;
+    private String lastText;
+
+    private BarcodeCallback callback = new BarcodeCallback() {
+        @Override
+        public void barcodeResult(BarcodeResult result) {
+            if(result.getText() == null || result.getText().equals(lastText)) {
+                // Prevent duplicate scans
+                return;
+            }
+
+            lastText = result.getText();
+            barcodeView.setStatusText(result.getText());
+
+            beepManager.playBeepSoundAndVibrate();
+            int title;
+            dialog = new AlertDialog.Builder(ActivityAddPoints.this) // Pass a reference to your main activity here
+                    .setTitle("title")
+                    .setMessage("message")
+                    .setPositiveButton("OK", new DialogInterface.OnClickListener()
+                    {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i)
+                        {
+                            dialog.cancel();
+                        }
+                    })
+                    .show();
+            //Added preview of scanned barcode
+        }
+
+        @Override
+        public void possibleResultPoints(List<ResultPoint> resultPoints) {
+        }
+    };
+    private AlertDialog dialog;
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        barcodeView.resume();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+
+        barcodeView.pause();
+    }
+
+    public void pause(View view) {
+        barcodeView.pause();
+    }
+
+    public void resume(View view) {
+        barcodeView.resume();
+    }
+
+    public void triggerScan(View view) {
+        barcodeView.decodeSingle(callback);
+    }
+
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        return barcodeView.onKeyDown(keyCode, event) || super.onKeyDown(keyCode, event);
     }
 }

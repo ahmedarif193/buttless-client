@@ -28,8 +28,9 @@ import com.android.volley.Request;
 import com.android.volley.ServerError;
 import com.android.volley.TimeoutError;
 import com.android.volley.toolbox.JsonObjectRequest;
-import com.buttless.client.Adapter.AdapterActivity;
-import com.buttless.client.Data.DataPublic;
+import com.buttless.client.Adapter.AdapterHomeHistory;
+import com.buttless.client.Controllers.Fragments.MainFragment;
+import com.buttless.client.models.DataPublic;
 import com.facebook.shimmer.ShimmerFrameLayout;
 
 import org.json.JSONArray;
@@ -65,6 +66,9 @@ public class ActivityHome extends AppCompatActivity {
     private RecyclerView recHistory;
     private CoordinatorLayout corNoLonger;
     private SwipeRefreshLayout mSwipeRefreshLayout;
+
+    private MainFragment mainFragment;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -124,10 +128,21 @@ public class ActivityHome extends AppCompatActivity {
         txtHomePoints.setVisibility(View.GONE);
         recHistory.setVisibility(View.GONE);
         corNoLonger.setVisibility(View.GONE);
+        this.configureAndShowMainFragment();
 
         getPoints();
     }
+    private void configureAndShowMainFragment(){
 
+        mainFragment = (MainFragment) getSupportFragmentManager().findFragmentById(R.id.activity_main_frame_layout);
+
+//        if (mainFragment == null) {
+//            mainFragment = new MainFragment();
+//            getSupportFragmentManager().beginTransaction()
+//                    .add(R.id.activity_main_frame_layout, mainFragment)
+//                    .commit();
+//        }
+    }
     @Override
     protected void onResume() {
         super.onResume();
@@ -179,7 +194,6 @@ public class ActivityHome extends AppCompatActivity {
                             mShimmerViewContainer.stopShimmerAnimation();
                             mShimmerViewContainer.setVisibility(View.GONE);
                             txtHomePoints.setVisibility(View.VISIBLE);
-                            Log.d("API123", "---------");
                         } else {
                             AlertDialog alertDialog = new AlertDialog.Builder(ActivityHome.this).create();
                             alertDialog.setTitle(this.getResources().getString(R.string.ops));
@@ -305,7 +319,7 @@ public class ActivityHome extends AppCompatActivity {
                 }
                 onItemsLoadComplete();
                 RecyclerView mRVUserActivity = findViewById(R.id.userActivityList);
-                AdapterActivity mAdapter = new AdapterActivity(ActivityHome.this, data);
+                AdapterHomeHistory mAdapter = new AdapterHomeHistory(ActivityHome.this, data);
                 mRVUserActivity.setAdapter(mAdapter);
                 mRVUserActivity.setLayoutManager(new LinearLayoutManager(ActivityHome.this));
                 mRVUserActivity.setVisibility(View.VISIBLE);

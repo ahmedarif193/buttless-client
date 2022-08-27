@@ -38,4 +38,7 @@
     <dimen name="timestamp">11dp</dimen>
     <dimen name="description">15dp</dimen>
     <dimen name="price">13dp</dimen>
+    <!--card dementions -->
+    <dimen name="list_item_height">160dp</dimen>
+    <dimen name="margin_medium">12dp</dimen>
 </resources>

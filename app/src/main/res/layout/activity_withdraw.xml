@@ -118,35 +118,10 @@
                     android:layout_height="wrap_content"
                     android:orientation="vertical">
 
-                    <EditText
-                        android:id="@+id/edtPayPalMail"
+                    <androidx.recyclerview.widget.RecyclerView
+                        android:id="@+id/redeem_list"
                         android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:textColor="@color/grey_40"
-                        android:hint="@string/your_paypal_email"
-                        android:inputType="textEmailAddress"
-                        android:layout_marginBottom="10dp" />
-
-                    <TextView
-                        android:layout_gravity="center"
-                        android:id="@+id/txtEstimated"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/undefined"
-                        android:textAppearance="@style/Base.TextAppearance.AppCompat.Subhead"
-                        android:textColor="@color/grey_40"
-                        android:layout_marginTop="30dp"
-                        android:layout_marginBottom="10dp"/>
-
-                    <Button
-                        android:id="@+id/btn_add_balance"
-                        android:layout_width="match_parent"
-                        android:layout_height="60dp"
-                        android:layout_weight="1"
-                        android:gravity="center"
-                        android:text="@string/withdraw"
-                        android:theme="@style/Button.Add"
-                        android:onClick="withdraw"/>
+                        android:layout_height="match_parent" />
 
                 </LinearLayout>
 

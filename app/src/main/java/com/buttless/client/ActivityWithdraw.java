@@ -2,13 +2,14 @@ package com.buttless.client;
 
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.app.AlertDialog;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Patterns;
 import android.view.View;
-import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -20,15 +21,28 @@ import com.android.volley.Request;
 import com.android.volley.ServerError;
 import com.android.volley.TimeoutError;
 import com.android.volley.toolbox.JsonObjectRequest;
+import com.buttless.client.Adapter.AdapterRedeemClientAdapter;
+import com.buttless.client.models.ItemRedeemClientData;
 import com.facebook.shimmer.ShimmerFrameLayout;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.text.DecimalFormat;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
+import butterknife.BindView;
+
 public class ActivityWithdraw extends AppCompatActivity {
+
+    // FOR DESIGN
+    @BindView(R.id.redeem_list)
+    RecyclerView recyclerWithdrawView; // 1 - Declare RecyclerView
+
+    private AdapterRedeemClientAdapter adapterRedeemClientAdapter;
+    private List<ItemRedeemClientData> clientsData;
 
     public static final String PREFS_NAME = "FB_DTLHS";
 
@@ -40,9 +54,9 @@ public class ActivityWithdraw extends AppCompatActivity {
     private static final String KEY_TITLE = "title";
 
     private String apiUrl, storageUser;
-    private TextView txtHomePoints, txtEstimated;
+    private TextView txtHomePoints;
     private ShimmerFrameLayout mShimmerViewWithdraw;
-    private EditText edtPayPalMail;
+//    private EditText edtPayPalMail,txtEstimated;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -60,16 +74,30 @@ public class ActivityWithdraw extends AppCompatActivity {
         //define the home points textview
         txtHomePoints = findViewById(R.id.home_points);
 
-        txtEstimated = findViewById(R.id.txtEstimated);
+//        txtEstimated = findViewById(R.id.txtEstimated);
         //pick the facebook id from local storage logged user
         storageUser = shaPrefHome.getString("fb_id", "");
-        edtPayPalMail = findViewById(R.id.edtPayPalMail);
+//        edtPayPalMail = findViewById(R.id.edtPayPalMail);
         mShimmerViewWithdraw = findViewById(R.id.shimmer_view_withdraw);
         mShimmerViewWithdraw.startShimmerAnimation();
 
         txtHomePoints.setVisibility(View.GONE);
-
+        configureRecyclerView();
         getPoints();
+    }
+    // 3 - Configure RecyclerView, adapterRedeemClientAdapter, LayoutManager & glue it together
+    private void configureRecyclerView(){
+        // 3.1 - Reset list
+        this.clientsData = new ArrayList<>();
+
+        ItemRedeemClientData data = new ItemRedeemClientData(null);
+        clientsData.add(data);
+        // 3.2 - Create adapterRedeemClientAdapter passing the list of users
+        this.adapterRedeemClientAdapter = new AdapterRedeemClientAdapter(this,clientsData);
+        // 3.3 - Attach the adapterRedeemClientAdapter to the recyclerview to populate items
+        this.recyclerWithdrawView.setAdapter(this.adapterRedeemClientAdapter);
+        // 3.4 - Set layout manager to position the items
+        this.recyclerWithdrawView.setLayoutManager(new LinearLayoutManager(ActivityWithdraw.this));
     }
 
     private void getPoints() {
@@ -99,7 +127,7 @@ public class ActivityWithdraw extends AppCompatActivity {
                             Double valueTwo = value / 1000;
                             String dc = new DecimalFormat("##.00").format(valueTwo);
 
-                            txtEstimated.setText(getString(R.string.estimated, dc));
+//                            txtEstimated.setText(getString(R.string.estimated, dc));
                         } else {
                             AlertDialog alertDialog = new AlertDialog.Builder(ActivityWithdraw.this).create();
                             alertDialog.setTitle(this.getResources().getString(R.string.ops));
@@ -153,69 +181,69 @@ public class ActivityWithdraw extends AppCompatActivity {
         return Patterns.EMAIL_ADDRESS.matcher(email).matches();
     }
 
-    public void withdraw(View view){
-        if (edtPayPalMail.getText().toString().trim().length() < 1){
-            Toast.makeText(this, this.getResources().getString(R.string.error_empty_mail), Toast.LENGTH_LONG).show();
-        } else if (!isEmailValid(edtPayPalMail.getText().toString())){
-            Toast.makeText(this, this.getResources().getString(R.string.error_invalid_mail), Toast.LENGTH_LONG).show();
-        } else if (txtHomePoints.getText().toString().equals("0")){
-            Toast.makeText(this, this.getResources().getString(R.string.error_no_balance), Toast.LENGTH_LONG).show();
-        } else {
-            JSONObject request = new JSONObject();
-            try {
-                request.put(KEY_USERNAME, storageUser);
-                request.put(KEY_POINTS, txtHomePoints.getText().toString());
-                request.put(KEY_MAIL, edtPayPalMail.getText().toString());
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-            String withdraw_url = apiUrl + "withdraw.php";
-            JsonObjectRequest jsArrayRequest = new JsonObjectRequest
-                    (Request.Method.POST, withdraw_url, request, response -> {
-                        try {
-                            if (response.getInt(KEY_STATUS) == 0) {
-                                AlertDialog alertDialog = new AlertDialog.Builder(ActivityWithdraw.this).create();
-                                alertDialog.setTitle(response.getString(KEY_TITLE));
-                                alertDialog.setMessage(response.getString(KEY_MESSAGE));
-                                alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, this.getResources().getString(R.string.ok),
-                                        (dialog, which) -> {
-                                            dialog.dismiss();
-                                            finish();
-                                        });
-                                alertDialog.show();
-                            } else {
-                                AlertDialog alertDialog = new AlertDialog.Builder(ActivityWithdraw.this).create();
-                                alertDialog.setTitle(this.getResources().getString(R.string.ops));
-                                alertDialog.setMessage(response.getString(KEY_MESSAGE));
-                                alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, this.getResources().getString(R.string.ok),
-                                        (dialog, which) -> dialog.dismiss());
-                                alertDialog.show();
-                            }
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
-                    }, error -> {
-                        try {
-                            if (error instanceof TimeoutError) {
-                                Toast.makeText(ActivityWithdraw.this, this.getResources().getString(R.string.timeout_error), Toast.LENGTH_LONG).show();
-                            } else if(error instanceof NoConnectionError){
-                                Toast.makeText(ActivityWithdraw.this, this.getResources().getString(R.string.no_connection_error), Toast.LENGTH_LONG).show();
-                            } else if (error instanceof AuthFailureError) {
-                                Toast.makeText(ActivityWithdraw.this, this.getResources().getString(R.string.auth_failure_error), Toast.LENGTH_LONG).show();
-                            } else if (error instanceof ServerError) {
-                                Toast.makeText(ActivityWithdraw.this, this.getResources().getString(R.string.server_error), Toast.LENGTH_LONG).show();
-                            } else if (error instanceof NetworkError) {
-                                Toast.makeText(ActivityWithdraw.this, this.getResources().getString(R.string.network_error), Toast.LENGTH_LONG).show();
-                            } else if (error instanceof ParseError) {
-                                Toast.makeText(ActivityWithdraw.this, this.getResources().getString(R.string.parse_error), Toast.LENGTH_LONG).show();
-                            } else {
-                                Toast.makeText(ActivityWithdraw.this, this.getResources().getString(R.string.default_error), Toast.LENGTH_LONG).show();
-                            }
-                        } catch (Exception ignored) {
-
-                        }
-                    });
-            MySingleton.getInstance(this).addToRequestQueue(jsArrayRequest);
-        }
-    }
+//    public void withdraw(View view){
+//        if (edtPayPalMail.getText().toString().trim().length() < 1){
+//            Toast.makeText(this, this.getResources().getString(R.string.error_empty_mail), Toast.LENGTH_LONG).show();
+//        } else if (!isEmailValid(edtPayPalMail.getText().toString())){
+//            Toast.makeText(this, this.getResources().getString(R.string.error_invalid_mail), Toast.LENGTH_LONG).show();
+//        } else if (txtHomePoints.getText().toString().equals("0")){
+//            Toast.makeText(this, this.getResources().getString(R.string.error_no_balance), Toast.LENGTH_LONG).show();
+//        } else {
+//            JSONObject request = new JSONObject();
+//            try {
+//                request.put(KEY_USERNAME, storageUser);
+//                request.put(KEY_POINTS, txtHomePoints.getText().toString());
+//                request.put(KEY_MAIL, edtPayPalMail.getText().toString());
+//            } catch (JSONException e) {
+//                e.printStackTrace();
+//            }
+//            String withdraw_url = apiUrl + "withdraw.php";
+//            JsonObjectRequest jsArrayRequest = new JsonObjectRequest
+//                    (Request.Method.POST, withdraw_url, request, response -> {
+//                        try {
+//                            if (response.getInt(KEY_STATUS) == 0) {
+//                                AlertDialog alertDialog = new AlertDialog.Builder(ActivityWithdraw.this).create();
+//                                alertDialog.setTitle(response.getString(KEY_TITLE));
+//                                alertDialog.setMessage(response.getString(KEY_MESSAGE));
+//                                alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, this.getResources().getString(R.string.ok),
+//                                        (dialog, which) -> {
+//                                            dialog.dismiss();
+//                                            finish();
+//                                        });
+//                                alertDialog.show();
+//                            } else {
+//                                AlertDialog alertDialog = new AlertDialog.Builder(ActivityWithdraw.this).create();
+//                                alertDialog.setTitle(this.getResources().getString(R.string.ops));
+//                                alertDialog.setMessage(response.getString(KEY_MESSAGE));
+//                                alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, this.getResources().getString(R.string.ok),
+//                                        (dialog, which) -> dialog.dismiss());
+//                                alertDialog.show();
+//                            }
+//                        } catch (JSONException e) {
+//                            e.printStackTrace();
+//                        }
+//                    }, error -> {
+//                        try {
+//                            if (error instanceof TimeoutError) {
+//                                Toast.makeText(ActivityWithdraw.this, this.getResources().getString(R.string.timeout_error), Toast.LENGTH_LONG).show();
+//                            } else if(error instanceof NoConnectionError){
+//                                Toast.makeText(ActivityWithdraw.this, this.getResources().getString(R.string.no_connection_error), Toast.LENGTH_LONG).show();
+//                            } else if (error instanceof AuthFailureError) {
+//                                Toast.makeText(ActivityWithdraw.this, this.getResources().getString(R.string.auth_failure_error), Toast.LENGTH_LONG).show();
+//                            } else if (error instanceof ServerError) {
+//                                Toast.makeText(ActivityWithdraw.this, this.getResources().getString(R.string.server_error), Toast.LENGTH_LONG).show();
+//                            } else if (error instanceof NetworkError) {
+//                                Toast.makeText(ActivityWithdraw.this, this.getResources().getString(R.string.network_error), Toast.LENGTH_LONG).show();
+//                            } else if (error instanceof ParseError) {
+//                                Toast.makeText(ActivityWithdraw.this, this.getResources().getString(R.string.parse_error), Toast.LENGTH_LONG).show();
+//                            } else {
+//                                Toast.makeText(ActivityWithdraw.this, this.getResources().getString(R.string.default_error), Toast.LENGTH_LONG).show();
+//                            }
+//                        } catch (Exception ignored) {
+//
+//                        }
+//                    });
+//            MySingleton.getInstance(this).addToRequestQueue(jsArrayRequest);
+//        }
+//    }
 }

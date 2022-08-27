@@ -67,13 +67,21 @@
 
     <string name="add_balance_title">Add Points</string>
 
-    <string name="google_play">Google Play - $%1$s</string>
+    <string name="google_play">Google Play - $%1$s------------------</string>
     <string name="buy_for">Buy for $%1$s</string>
 
-    <string name="withdraw_description">* The amount will be credited to your PayPal account within 48 business hours</string>
+    <string name="withdraw_description">* The redeem amount will be expired within 48 business hours</string>
     <string name="your_paypal_email">Your PayPal email</string>
     <string name="your_withdraw">points available</string>
 
     <string name="estimated">you receive $%1$s</string>
     <string name="buy_desc">You receive 50% (30% Google fees + 20% Wala fees) of your balance</string>
+    <string name="title_activity_redeem_points">ActivityRedeemPoints</string>
+    <!-- Strings used for fragments for navigation -->
+    <string name="first_fragment_label">First Fragment</string>
+    <string name="second_fragment_label">Second Fragment</string>
+    <string name="previous">Previous</string>
+
+    <string name="hello_first_fragment">Hello first fragment</string>
+    <string name="hello_second_fragment">Hello second fragment. Arg: %1$s</string>
 </resources>

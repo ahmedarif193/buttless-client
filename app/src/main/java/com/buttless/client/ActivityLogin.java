@@ -148,6 +148,8 @@ public class ActivityLogin extends AppCompatActivity {
                     String fb_id = user.optString("id");
                     String full_name = user.optString("name");
                     login(fb_id, full_name);
+                    Log.v("API123 fb_id", fb_id);
+                    Log.v("API123 full_name", full_name);
                 }).executeAsync();
             }
 
@@ -179,12 +181,15 @@ public class ActivityLogin extends AppCompatActivity {
         } catch (JSONException e) {
             e.printStackTrace();
         }
+        Log.v("API123 request : ", String.valueOf(request));
         String login_url = api_url + "login.php";
         JsonObjectRequest jsArrayRequest = new JsonObjectRequest
                 (Request.Method.POST, login_url, request, response -> {
                     pDialog.dismiss();
                     try {
+                        Log.v("API123 before if", "------------------");
                         if (response.getInt(KEY_STATUS) == 0) {
+                            Log.v("API123 after if", "------------------");
                             SharedPreferences.Editor edt = getSharedPreferences(PREFS_NAME, MODE_PRIVATE).edit();
                             edt.putString("fb_id", fb_id);
                             edt.putString("points", response.getString(KEY_POINTS));
