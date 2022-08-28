@@ -6,7 +6,7 @@
     <string name="facebook_app_id">3186798148209797</string>
     <string name="fb_login_protocol_scheme">fb3186798148209797</string>
 
-    <string name="url_api">http://159.69.90.136/api/</string>
+    <string name="url_api">http://192.168.1.25:9002/api/</string>
 
     <string name="next">NEXT</string>
     <string name="skip">SKIP</string>
