@@ -27,6 +27,7 @@ import com.facebook.FacebookCallback;
 import com.facebook.FacebookException;
 import com.facebook.GraphRequest;
 import com.facebook.GraphRequestAsyncTask;
+import com.facebook.GraphResponse;
 import com.facebook.Profile;
 import com.facebook.login.LoginResult;
 import com.facebook.login.widget.LoginButton;
@@ -44,7 +45,8 @@ public class ActivityLogin extends AppCompatActivity {
     private static final String KEY_MESSAGE = "message";
     private static final String KEY_FULL_NAME = "full_name";
     private static final String KEY_USERNAME = "username";
-    private static final String KEY_POINTS = "points";
+    private static final String KEY_POINTS = "score";
+    private static final String KEY_FBID = "score";
 
     TextView txtUsername, txtEmail;
     private ProgressDialog pDialog;
@@ -79,16 +81,18 @@ public class ActivityLogin extends AppCompatActivity {
             } catch (JSONException e) {
                 e.printStackTrace();
             }
-            String login_url = api_url + "login.php";
+            String login_url = api_url + "fb/register";
             JsonObjectRequest jsArrayRequest = new JsonObjectRequest
                     (Request.Method.POST, login_url, request, response -> {
                         pDialog.dismiss();
                         try {
-                            if (response.getInt(KEY_STATUS) == 0) {
+                            if (response.getString(KEY_STATUS) == "0") {
                                 SharedPreferences.Editor edt = getSharedPreferences(PREFS_NAME, MODE_PRIVATE).edit();
-                                edt.putString("fb_id", Profile.getCurrentProfile().getId());
-                                edt.putString("points", response.getString(KEY_POINTS));
+                                edt.putString(KEY_FBID, Profile.getCurrentProfile().getId());
+                                edt.putString(KEY_POINTS, response.getString(KEY_POINTS));
                                 edt.putString("full_name", Profile.getCurrentProfile().getName());
+                                edt.putString("email", Profile.getCurrentProfile().getName());
+
                                 edt.apply();
                                 bruteForce();
                                 loadDashboard();
@@ -182,17 +186,18 @@ public class ActivityLogin extends AppCompatActivity {
             e.printStackTrace();
         }
         Log.v("API123 request : ", String.valueOf(request));
-        String login_url = api_url + "login.php";
+        String login_url = api_url + "/fb/" + fb_id;
+
         JsonObjectRequest jsArrayRequest = new JsonObjectRequest
                 (Request.Method.POST, login_url, request, response -> {
                     pDialog.dismiss();
                     try {
                         Log.v("API123 before if", "------------------");
-                        if (response.getInt(KEY_STATUS) == 0) {
+                        if (response.getString(KEY_STATUS) == "0") {
                             Log.v("API123 after if", "------------------");
                             SharedPreferences.Editor edt = getSharedPreferences(PREFS_NAME, MODE_PRIVATE).edit();
-                            edt.putString("fb_id", fb_id);
-                            edt.putString("points", response.getString(KEY_POINTS));
+                            edt.putString(KEY_FBID, fb_id);
+                            edt.putString(KEY_POINTS, response.getString(KEY_POINTS));
                             edt.putString("full_name", Profile.getCurrentProfile().getName());
                             edt.apply();
                             loadDashboard();
@@ -245,8 +250,8 @@ public class ActivityLogin extends AppCompatActivity {
             @Override
             public void run() {
                 SharedPreferences settings = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
-                String fb_id = settings.getString("fb_id", "");
-                String points = settings.getString("points", "");
+                String fb_id = settings.getString(KEY_FBID, "");
+                String points = settings.getString(KEY_POINTS, "");
 
                 if (!fb_id.equals("") && !points.equals("")) {
                     loadDashboard();
@@ -265,8 +270,8 @@ public class ActivityLogin extends AppCompatActivity {
             @Override
             public void run() {
                 SharedPreferences settings = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
-                String fb_id = settings.getString("fb_id", "");
-                String points = settings.getString("points", "");
+                String fb_id = settings.getString(KEY_FBID, "");
+                String points = settings.getString(KEY_POINTS, "");
 
                 if (!fb_id.equals("") && !points.equals("")) {
                     loadDashboard();

@@ -55,7 +55,8 @@ public class ActivityHome extends AppCompatActivity {
     private static final String KEY_USERNAME = "username";
     private static final String KEY_STATUS = "status";
     private static final String KEY_MESSAGE = "message";
-    private static final String KEY_POINTS = "points";
+    private static final String KEY_POINTS = "score";
+    private static final String KEY_FBID = "score";
 
     public static final int CONNECTION_TIMEOUT = 10000;
     public static final int READ_TIMEOUT = 15000;
@@ -82,7 +83,7 @@ public class ActivityHome extends AppCompatActivity {
         //define the home points textview
         txtHomePoints = findViewById(R.id.home_points);
         //pick the facebook id from local storage logged user
-        storageUser = shaPrefHome.getString("fb_id", "");
+        storageUser = shaPrefHome.getString(KEY_FBID, "");
 
         recHistory = findViewById(R.id.userActivityList);
         corNoLonger = findViewById(R.id.coordinator_lyt);
@@ -181,15 +182,15 @@ public class ActivityHome extends AppCompatActivity {
             //print a error, or do something
             e.printStackTrace();
         }
-        //apiurl + php points file, to get user points
-        String requestUserPoints = apiUrl + "points.php";
+        //api/fb/[id]
+        String requestUserPoints = apiUrl + "/fb/" + storageUser;
         //define a array
         JsonObjectRequest jsArrayRequest = new JsonObjectRequest
                 (Request.Method.POST, requestUserPoints, request, response -> {
                     //show a dialog
                     try {
                         Log.d("API123", String.valueOf(response.getInt(KEY_STATUS)));
-                        if (response.getInt(KEY_STATUS) == 0) {
+                        if (response.getString(KEY_STATUS) == "0") {
                             txtHomePoints.setText(response.getString(KEY_POINTS));
                             mShimmerViewContainer.stopShimmerAnimation();
                             mShimmerViewContainer.setVisibility(View.GONE);
