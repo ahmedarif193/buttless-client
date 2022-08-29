@@ -47,7 +47,6 @@ public class ActivityLogin extends AppCompatActivity {
     private static final String KEY_USERNAME = "username";
     private static final String KEY_EMAIL = "email";
 
-    private static final String KEY_POINTS = "score";
     private static final String KEY_FBID = "fb_id";
 
     TextView txtUsername, txtEmail;

@@ -4,6 +4,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
+import android.app.ProgressDialog;
 
 import android.Manifest;
 import android.app.AlertDialog;
@@ -12,6 +13,7 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.widget.Toast;
@@ -59,21 +61,26 @@ public class ActivityAddPoints extends AppCompatActivity {
     private static final int PERMISSION_REQUEST_CAMERA = 0;
 
     public static final String PREF_FILE= "MyPref";
-    public static String PRODUCT_ID= "consumable";
 
     public static final String PREFS_NAME = "FB_DTLHS";
 
-    private static final String KEY_USERNAME = "username";
     private static final String KEY_STATUS = "status";
     private static final String KEY_MESSAGE = "message";
-    private static final String KEY_POINTS = "points";
+
+    private static final String KEY_USERNAME = "username";
+    private static final String KEY_POINTS = "score";
+    private static final String KEY_FBID = "fb_id";
+    private static final String KEY_UUID = "uuid";
 
     public static final int CONNECTION_TIMEOUT = 10000;
     public static final int READ_TIMEOUT = 15000;
 
-    public String apiUrl, storageUser, svdPoints;
+    public String apiUrl, storageUser;
     private ShimmerFrameLayout mShimmerViewContainerItem;
 
+    private ProgressDialog pDialog;
+
+    
     //private List<String> sku = new ArrayList<>();
 
     @Override
@@ -94,7 +101,7 @@ public class ActivityAddPoints extends AppCompatActivity {
         //get all settings from local storage
         SharedPreferences shaPrefHome = Objects.requireNonNull(ActivityAddPoints.this.getSharedPreferences(PREFS_NAME, MODE_PRIVATE));
         //pick the facebook id from local storage logged user
-        storageUser = shaPrefHome.getString("fb_id", "");
+        storageUser = shaPrefHome.getString(KEY_FBID, "");
 
         new AsyncFetch().execute();
 
@@ -217,27 +224,34 @@ public class ActivityAddPoints extends AppCompatActivity {
         }
     }
 
-    public void addPointsToUser(){
+    public void addPointsToUser(String uuidQrcode){
         JSONObject request = new JSONObject();
         try {
             request.put(KEY_USERNAME, storageUser);
-            request.put(KEY_POINTS, svdPoints);
+            request.put(KEY_UUID, uuidQrcode);
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        String login_url = apiUrl + "item.php";
+        Log.v("API123 request : ", String.valueOf(request));
+
+        String login_url = apiUrl + "qrcode/assing";
         JsonObjectRequest jsArrayRequest = new JsonObjectRequest
                 (Request.Method.POST, login_url, request, response -> {
                     try {
-                        if (response.getInt(KEY_STATUS) == 0) {
-                            Toast.makeText(this, response.getInt(KEY_POINTS) + " " + this.getResources().getString(R.string.points_added), Toast.LENGTH_SHORT).show();
-                        } else {
-                            AlertDialog alertDialog = new AlertDialog.Builder(ActivityAddPoints.this).create();
-                            alertDialog.setTitle(this.getResources().getString(R.string.ops));
-                            alertDialog.setMessage(response.getString(KEY_MESSAGE));
-                            alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, this.getResources().getString(R.string.ok),
-                                    (dialog, which) -> dialog.dismiss());
-                            alertDialog.show();
+                        Log.v("API123 request : ", String.valueOf(response));
+                        
+                        displayLoader();
+                        AlertDialog alertDialog = new AlertDialog.Builder(ActivityAddPoints.this).create();
+                        alertDialog.setTitle(this.getResources().getString(R.string.ops));
+                        alertDialog.setMessage(response.getString(KEY_MESSAGE));
+                        alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, this.getResources().getString(R.string.ok),
+                                (dialog, which) -> dialog.dismiss());
+                        alertDialog.show();
+                        pDialog.dismiss();
+
+                        if (response.getInt(KEY_STATUS) == 0){
+                            
+                            finish();
                         }
                     } catch (JSONException e) {
                         e.printStackTrace();
@@ -282,20 +296,8 @@ public class ActivityAddPoints extends AppCompatActivity {
             barcodeView.setStatusText(result.getText());
 
             beepManager.playBeepSoundAndVibrate();
-            int title;
-            dialog = new AlertDialog.Builder(ActivityAddPoints.this) // Pass a reference to your main activity here
-                    .setTitle("title")
-                    .setMessage("message")
-                    .setPositiveButton("OK", new DialogInterface.OnClickListener()
-                    {
-                        @Override
-                        public void onClick(DialogInterface dialogInterface, int i)
-                        {
-                            dialog.cancel();
-                        }
-                    })
-                    .show();
-            //Added preview of scanned barcode
+            addPointsToUser(lastText);
+            //Added preview of scanned barcode 
         }
 
         @Override
@@ -333,5 +335,12 @@ public class ActivityAddPoints extends AppCompatActivity {
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         return barcodeView.onKeyDown(keyCode, event) || super.onKeyDown(keyCode, event);
+    }
+    private void displayLoader() {
+        pDialog = new ProgressDialog(ActivityAddPoints.this);
+        pDialog.setMessage(this.getResources().getString(R.string.autenticate));
+        pDialog.setIndeterminate(false);
+        pDialog.setCancelable(false);
+        pDialog.show();
     }
 }
