@@ -4,10 +4,13 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
+
+import android.app.Activity;
 import android.app.ProgressDialog;
 
 import android.Manifest;
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
@@ -223,11 +226,27 @@ public class ActivityAddPoints extends AppCompatActivity {
             }
         }
     }
-
+    boolean resultValue = false;
+    Context context;
     public void addPointsToUser(String uuidQrcode){
+        context = ActivityAddPoints.this;
+        AlertDialog.Builder alert = new AlertDialog.Builder(ActivityAddPoints.this);
+        alert.setTitle("Title");
+        alert.setMessage("Message");
+        alert.setPositiveButton("Return True", new
+                DialogInterface.OnClickListener()
+                {
+                    public void onClick(DialogInterface dialog, int id)
+                    {
+                        ((Activity) context).finish();
+
+                        resultValue = true;
+                    }
+                });
+
         JSONObject request = new JSONObject();
         try {
-            request.put(KEY_USERNAME, storageUser);
+            request.put(KEY_FBID, storageUser);
             request.put(KEY_UUID, uuidQrcode);
         } catch (JSONException e) {
             e.printStackTrace();
@@ -239,19 +258,20 @@ public class ActivityAddPoints extends AppCompatActivity {
                 (Request.Method.POST, login_url, request, response -> {
                     try {
                         Log.v("API123 request : ", String.valueOf(response));
-                        
+
                         displayLoader();
                         AlertDialog alertDialog = new AlertDialog.Builder(ActivityAddPoints.this).create();
                         alertDialog.setTitle(this.getResources().getString(R.string.ops));
                         alertDialog.setMessage(response.getString(KEY_MESSAGE));
                         alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, this.getResources().getString(R.string.ok),
-                                (dialog, which) -> dialog.dismiss());
+                                (dialog, which) -> ((Activity) context).finish());
+
                         alertDialog.show();
                         pDialog.dismiss();
 
                         if (response.getInt(KEY_STATUS) == 0){
                             
-                            finish();
+
                         }
                     } catch (JSONException e) {
                         e.printStackTrace();
