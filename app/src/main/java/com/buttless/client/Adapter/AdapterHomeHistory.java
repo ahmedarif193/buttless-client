@@ -2,6 +2,8 @@ package com.buttless.client.Adapter;
 
 import android.content.Context;
 import androidx.recyclerview.widget.RecyclerView;
+
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,7 +13,9 @@ import android.widget.TextView;
 import com.buttless.client.models.DataPublic;
 import com.buttless.client.R;
 
+import java.text.SimpleDateFormat;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 
 public class AdapterHomeHistory extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
@@ -43,22 +47,20 @@ public class AdapterHomeHistory extends RecyclerView.Adapter<RecyclerView.ViewHo
         MyHolder myHolder = (MyHolder) holder;
         DataPublic current = data.get(position);
 
-        myHolder.txtDate.setText(current.historyDate);
-        myHolder.txtValue.setText(current.historyValue);
+        if(current.historyDate != null && !current.historyDate.isEmpty() && current.historyDate != "null" ){
+            Log.d("API123 requestUserPoints current.historyDate", "hmmmmmmmmmm"+current.historyDate.length());
+            Date date_creation = new Date(Long.parseLong(current.historyDate));
+            SimpleDateFormat format_date = new SimpleDateFormat("MM/dd/yyyy hh:mm:ss");
 
-        if (current.historyType.equals("0")){
-            myHolder.txtType.setText(R.string.add_balance);
-            myHolder.imgHistory.setRotation(180);
-        } else if(current.historyType.equals("1")){
-            myHolder.txtType.setText(R.string.withdraw_history);
-        } else if(current.historyType.equals("2")){
-            myHolder.txtType.setText(R.string.refund_history);
-            myHolder.imgHistory.setRotation(180);
+            myHolder.txtDate.setText(format_date.format(date_creation));
         }
 
-        if (current.historyStatus.equals("0")){
+        myHolder.txtValue.setText(current.historyValue + " points");
+        Log.d("API123 requestUserPoints current.historyValue", current.historyValue);
+
+        if (current.historyStatus.equals("false")){
             myHolder.txtStatus.setText(R.string.pending);
-        } else if(current.historyStatus.equals("1")){
+        } else if(current.historyStatus.equals("true")){
             myHolder.txtStatus.setText(R.string.approved);
             myHolder.txtStatus.setTextColor(context.getResources().getColor(R.color.green_900));
         } else if(current.historyStatus.equals("2")){

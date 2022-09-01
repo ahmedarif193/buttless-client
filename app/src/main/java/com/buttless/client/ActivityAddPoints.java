@@ -203,9 +203,6 @@ public class ActivityAddPoints extends AppCompatActivity {
 
     }
 
-
-
-
     private void requestCamera() {
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED) {
         } else {

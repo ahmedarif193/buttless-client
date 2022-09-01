@@ -177,7 +177,7 @@ public class ActivityHome extends AppCompatActivity {
 
         //api/fb/[id]
         String requestUserPoints = apiUrl + "fb/usr/" + m_fbid;
-        Log.d("API123 requestUserPoints :", requestUserPoints);
+        Log.d("API123:", requestUserPoints);
 
         //define a array
         JsonObjectRequest jsArrayRequest = new JsonObjectRequest
@@ -255,8 +255,9 @@ public class ActivityHome extends AppCompatActivity {
 
         @Override
         protected String doInBackground(String... params) {
+
             try {
-                url = new URL(apiUrl + "activity.php?username=" + m_fbid);
+                url = new URL(apiUrl + "qrcode/lastfive/" + m_fbid);
             } catch (MalformedURLException e) {
                 // TODO Auto-generated catch block
                 e.printStackTrace();
@@ -268,7 +269,6 @@ public class ActivityHome extends AppCompatActivity {
                 conn.setReadTimeout(READ_TIMEOUT);
                 conn.setConnectTimeout(CONNECTION_TIMEOUT);
                 conn.setRequestMethod("GET");
-                conn.setDoOutput(true);
             } catch (IOException e1) {
                 // TODO Auto-generated catch block
                 e1.printStackTrace();
@@ -300,27 +300,32 @@ public class ActivityHome extends AppCompatActivity {
 
         @Override
         protected void onPostExecute(String result) {
-
             List<DataPublic> data=new ArrayList<>();
+            Log.d("API123 onPostExecute :", result);
+
             try {
                 JSONArray jArray = new JSONArray(result);
+                Log.d("API123 jsonObject:","JSONArray.length() " +jArray.length());
                 for(int i=0;i<jArray.length();i++){
-                    JSONObject json_data = jArray.getJSONObject(i);
-                    DataPublic publicData = new DataPublic();
-                    publicData.historyType = json_data.getString("type");
-                    publicData.historyDate = json_data.getString("date");
-                    publicData.historyStatus = json_data.getString("status");
-                    publicData.historyValue = json_data.getString("value");
+                    JSONObject json_data_uuid   = jArray.getJSONObject(i);
+                    DataPublic publicData       = new DataPublic();
+                    publicData.historyDate      = json_data_uuid.getString("dateCreated");
+                    JSONObject json_data_img    = json_data_uuid.getJSONObject("image");
+                    publicData.historyStatus    = json_data_img.getString("resolved");
+                    publicData.historyValue     = json_data_uuid.getString("value");
+                    Log.d("API123", "publicData.historyStatus onPostExecute" + publicData.historyStatus);
+
                     data.add(publicData);
+                    onItemsLoadComplete();
+                    RecyclerView mRVUserActivity = findViewById(R.id.userActivityList);
+                    AdapterHomeHistory mAdapter = new AdapterHomeHistory(ActivityHome.this, data);
+                    mRVUserActivity.setAdapter(mAdapter);
+                    mRVUserActivity.setLayoutManager(new LinearLayoutManager(ActivityHome.this));
+                    mRVUserActivity.setVisibility(View.VISIBLE);
+                    mShimmerViewContainerHistory.setVisibility(View.GONE);
                 }
-                onItemsLoadComplete();
-                RecyclerView mRVUserActivity = findViewById(R.id.userActivityList);
-                AdapterHomeHistory mAdapter = new AdapterHomeHistory(ActivityHome.this, data);
-                mRVUserActivity.setAdapter(mAdapter);
-                mRVUserActivity.setLayoutManager(new LinearLayoutManager(ActivityHome.this));
-                mRVUserActivity.setVisibility(View.VISIBLE);
-                mShimmerViewContainerHistory.setVisibility(View.GONE);
             } catch (JSONException e) {
+                e.printStackTrace();
                 mShimmerViewContainerHistory.setVisibility(View.GONE);
                 corNoLonger.setVisibility(View.VISIBLE);
                 onItemsLoadComplete();

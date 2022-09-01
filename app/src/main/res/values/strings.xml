@@ -54,8 +54,8 @@
     <string name="home_no_item">you haven\'t scanned any points to the app yet</string>
     <string name="points_added">points have been scanned and added to your account</string>
 
-    <string name="pending">Pending</string>
-    <string name="approved">Approved</string>
+    <string name="pending">Pending for validation</string>
+    <string name="approved">Confirmed</string>
     <string name="cancelled">Canceled</string>
     <string name="refund">Refund</string>
     <string name="waiting_for_google">Waiting for Google</string>
