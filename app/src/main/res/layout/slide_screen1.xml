@@ -21,7 +21,7 @@
         <ImageView
             android:layout_width="300dp"
             android:layout_height="300dp"
-            android:src="@drawable/undraw_reading"
+            android:src="@drawable/woman_gets_points"
             android:layout_marginStart="8dp"
             android:layout_marginEnd="8dp"
             android:contentDescription="@string/slide_1_title"/>

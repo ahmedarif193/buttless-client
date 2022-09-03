@@ -22,7 +22,7 @@
         <ImageView
             android:layout_width="300dp"
             android:layout_height="300dp"
-            android:src="@drawable/undraw_with_love"
+            android:src="@drawable/undraw_reading"
             android:layout_marginStart="8dp"
             android:layout_marginEnd="8dp"
             android:contentDescription="@string/slide_3_title"/>
