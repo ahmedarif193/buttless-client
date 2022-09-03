@@ -12,11 +12,11 @@
     <string name="skip">SKIP</string>
     <string name="start">LET\'S GO</string>
     <string name="slide_1_title">What is it?</string>
-    <string name="slide_1_desc">We exchange your rewards for money in your PayPal wallet</string>
+    <string name="slide_1_desc">We redeem your reward points with discounts from various member brands.</string>
     <string name="slide_2_title">How it works?</string>
-    <string name="slide_2_desc">Your rewards come to us and we will refund you in cash</string>
-    <string name="slide_3_title">It\'s safe?</string>
-    <string name="slide_3_desc">You can trust us, we will trust you too</string>
+    <string name="slide_2_desc">Putt any cigarette butts you have into one of the terminals we set up within the city and earn points.</string>
+    <string name="slide_3_title">I\'s it that important?</string>
+    <string name="slide_3_desc">Trust us, Cigarette butts are highly polluting things in the city, your contribution matters a lot!</string>
 
     <string name="login_desc">We guarantee your security with SSL connections</string>
 
@@ -39,7 +39,7 @@
     <string name="error_no_balance">You do not have enough points to withdraw</string>
 
     <string name="ops">Ops!</string>
-    <string name="ok">Ok</string>
+    <string name="ok">OK</string>
     <string name="close">Close</string>
     <string name="undefined">undefined</string>
 
@@ -68,14 +68,14 @@
     <string name="add_balance_title">Add Points</string>
 
     <string name="google_play">Google Play - $%1$s------------------</string>
-    <string name="buy_for">Buy for $%1$s</string>
+    <string name="buy_for">Buy for 25Points</string>
 
     <string name="withdraw_description">* The redeem amount will be expired within 48 business hours</string>
     <string name="your_paypal_email">Your PayPal email</string>
     <string name="your_withdraw">points available</string>
 
     <string name="estimated">you receive $%1$s</string>
-    <string name="buy_desc">You receive 50% (30% Google fees + 20% Wala fees) of your balance</string>
+    <string name="buy_desc">you receive a discount of 25% of any order that is bellow 20 dollars.</string>
     <string name="title_activity_redeem_points">ActivityRedeemPoints</string>
     <!-- Strings used for fragments for navigation -->
     <string name="first_fragment_label">First Fragment</string>
